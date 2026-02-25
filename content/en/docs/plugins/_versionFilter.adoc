@@ -79,7 +79,9 @@ sources:
 
 ===== Example with replaceall
 
-Some projects use version tags that are not directly compatible with the regex pattern. For example, curl uses tags like `curl-8_11_1` where underscores separate version components. The `replaceall` option can be used to normalize these tags before applying the regex.
+Some projects use version tags that are not directly compatible with the regex pattern. For example, curl uses tags like
+`curl-8_11_1` where underscores separate version components.
+The `replaceall` option can be used to normalize these tags before applying the regex.
 
 ```yaml
 sources:
@@ -133,6 +135,7 @@ If a extracted version doesn't respect semantic versioning, then it's not the va
 
 `versionFilter.replaceall` can optionally be used to transform version strings before the regex is applied.
 It accepts a `pattern` (regex) and a `replacement` string, similar to a find-and-replace operation.
+See the [regex section](#_regexp) for an example.
 
 ===== Example
 
@@ -150,26 +153,6 @@ sources:
         regex: "@yarnpkg/cli/(\\d*\\.\\d*\\.\\d*)"
 ```
 => Return the version "4.5.3"
-
-===== Example with replaceall
-
-Some projects use version tags that are not directly compatible with the regex pattern. For example, curl uses tags like `curl-8_11_1` where underscores separate version components. The `replaceall` option can be used to normalize these tags before applying the regex.
-
-```yaml
-sources:
-  curl:
-    kind: githubRelease
-    spec:
-      owner: "curl"
-      repository: "curl"
-      versionFilter:
-        kind: regex/semver
-        regex: 'curl-(\d+\.\d+\.\d+)'
-        replaceall:
-          pattern: "_"
-          replacement: "."
-```
-=> The `replaceall` converts `curl-8_11_1` to `curl-8.11.1` before matching, then the regex extracts `8.11.1` and applies semver sorting/filtering
 
 ==== regex/time
 
