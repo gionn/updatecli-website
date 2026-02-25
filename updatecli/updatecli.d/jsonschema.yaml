@@ -1,6 +1,10 @@
 pipelineid: jsonschema
 name: "docs: update Updatecli jsonschema"
 
+labels:
+  event: release
+  monitoring: enable
+
 actions:
   default:
     kind: github/pullrequest
@@ -18,12 +22,13 @@ scms:
   default:
     kind: github
     spec:
-      branch: master
-      email: updatecli@olblak.com
-      owner: updatecli
-      repository: website
-      user: updatecli
-      commitusingapi: true
+      branch: "{{ .scm.branch }}"
+      email: "{{ .scm.email }}"
+      owner: "{{ .scm.owner }}"
+      repository: "{{ .scm.repository }}"
+      user: "{{ .scm.user }}"
+      force: true
+      commitusingapi: {{ scm.commitusingapi }}
     disabled: false
 
 targets:

@@ -1,49 +1,29 @@
----
 name: Updatecli
 on:
-  merge_group:
-    branch: master
+  release:
   workflow_dispatch:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
   schedule:
-    # * is a special character in YAML so you have to quote this string
-    # Run every hour
-    - cron: '0 * * * *'
-# Commenting until https://github.com/orgs/community/discussions/41518
-# is fixed
-#concurrency:
-#  # Restrict to one workflow per branch
-#  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
-#  cancel-in-progress: true
+    # Run at 12:00 every Saterday every 14 days
+    - cron: "0 12 */14 * *"
+
 jobs:
   updatecli:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
-      - name: "Install Updatecli"
-        uses: "updatecli/updatecli-action@v2.98.0"
+        uses: "actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3" # v6.0.0
+
+      - name: "Setup updatecli"
+        uses: "updatecli/updatecli-action@5ca36367fadc6ad94d590984fd9c696e783ec635" # v2.96.0
         with:
           version: "v0.114.0"
-      - name: "Run updatecli in dryrun"
-        run: "updatecli compose diff"
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: "Login Udash"
-        if: github.ref == 'refs/heads/master'
-        run: "updatecli udash login --experimental --api-url $UPDATECLI_UDASH_API_URL --oauth-access-token $UPDATECLI_UDASH_ACCESS_TOKEN $UPDATECLI_UDASH_URL"
-        env:
-          UPDATECLI_UDASH_API_URL: ${{ secrets.UPDATECLI_UDASH_API_URL }}
-          UPDATECLI_UDASH_ACCESS_TOKEN: ${{ secrets.UPDATECLI_UDASH_ACCESS_TOKEN }}
-          UPDATECLI_UDASH_URL: ${{ secrets.UPDATECLI_UDASH_URL }}
+
       - name: "Run updatecli"
-        if: github.ref == 'refs/heads/master'
-        run: "updatecli compose apply --clean-git-branches=true --experimental"
+        run: updatecli compose apply --clean-git-branches=true --experimental
         env:
           UPDATECLI_GITHUB_APP_CLIENT_ID: ${{ secrets.UPDATECLIBOT_APP_ID }}
           UPDATECLI_GITHUB_APP_PRIVATE_KEY: ${{ secrets.UPDATECLIBOT_APP_PRIVKEY }}
           UPDATECLI_GITHUB_APP_INSTALLATION_ID: ${{ secrets.UPDATECLIBOT_APP_INSTALLATION_ID }}
+          UPDATECLI_UDASH_API_URL: ${{ secrets.UPDATECLI_UDASH_API_URL }}
+          UPDATECLI_UDASH_ACCESS_TOKEN: ${{ secrets.UPDATECLI_UDASH_ACCESS_TOKEN }}
+          UPDATECLI_UDASH_URL: ${{ secrets.UPDATECLI_UDASH_URL }}
